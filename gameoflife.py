@@ -12,9 +12,10 @@ def grid(x,y):
     return mapa
 
 
-def showmap(grid):
+def showmap(grid): #mapa en consola
     for i in grid:
         print(i)
+
 
 def neighbors(x, y, map):
     rows = len(map)
@@ -52,6 +53,30 @@ def status(x, y, vecinos, map):
     return map
 
 
+def actualizarmapa(mapa):
+    new_mapa = [fila[:] for fila in mapa]
+    for fila in range(len(mapa)):
+        for columna in range(len(mapa[fila])):
+            vecinos = neighbors(fila, columna, mapa)
+            new_mapa = status(fila, columna, vecinos, new_mapa)
+
+    return new_mapa
+
+
+
+def mostrar_mapa(mapa):
+    for fila in range(len(mapa)):
+        for columna in range(len(mapa[fila])):
+            x = columna * TAMAÑO_CELDA
+            y = fila * TAMAÑO_CELDA
+
+            color = blanco if mapa[fila][columna] == 1 else negro
+            pygame.draw.rect(pantalla, color, (x, y, TAMAÑO_CELDA, TAMAÑO_CELDA))
+            # borde
+            pygame.draw.rect(pantalla, (255, 255, 255), (x, y, TAMAÑO_CELDA, TAMAÑO_CELDA), 1)
+
+
+
 
 #====================================================================
 
@@ -78,28 +103,11 @@ while ejecutando:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             ejecutando = False
+    pantalla.fill((0, 0, 0))  
 
 
-    pantalla.fill((0, 0, 0))  # Fondo oscuro
-    new_mapa = [fila[:] for fila in mapa]  # copia del mapa grid
-
-    for fila in range(len(mapa)):
-        for columna in range(len(mapa[fila])):
-            vecinos = neighbors(fila, columna, mapa)
-            new_mapa = status(fila, columna, vecinos, new_mapa)
-
-    mapa = new_mapa
-
-    # mostar el mapa
-    for fila in range(len(mapa)):
-        for columna in range(len(mapa[fila])):
-            x = columna * TAMAÑO_CELDA
-            y = fila * TAMAÑO_CELDA
-
-            color = blanco if mapa[fila][columna] == 1 else negro
-            pygame.draw.rect(pantalla, color, (x, y, TAMAÑO_CELDA, TAMAÑO_CELDA))
-            # borde
-            pygame.draw.rect(pantalla, (255, 255, 255), (x, y, TAMAÑO_CELDA, TAMAÑO_CELDA), 1)
+    mapa = actualizarmapa(mapa)
+    mostrar_mapa(mapa)
 
 
     pygame.display.flip()
